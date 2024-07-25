@@ -11,7 +11,6 @@ CarStates carState = InitialWaiting;
 String mode;
 int carSpeed;
 int duration;
-String direction;
 int timeInterval;
 bool ready;
 
@@ -61,16 +60,15 @@ void HandleCommandWaiting(){
       DeserializationError error = deserializeJson(doc, receivedMsg); // Parse the JSON string
 
    
-      String mode = doc["mode"].as<String>();
+      mode = doc["mode"].as<String>();
       carSpeed = doc["carSpeed"]; 
       duration = doc["duration"]; 
-      direction = doc["direction"].as<String>();
       timeInterval = doc["timeInterval"];
       ready = doc["ready"];
-      // send parameters back to the GUI
-      // send confirmation message to the GUI
 
       if (ready){
+        // send confirmation message to the GUI
+        SerialBT.println("pratemers set! Car speed is " + String(carSpeed));
         carState = WaitForRun;
       }
     }
@@ -78,8 +76,9 @@ void HandleCommandWaiting(){
 void HandleWaitForRun(){
   if (SerialBT.available()) {
     String run = SerialBT.readStringUntil('.');
-
+    
     if (run == "run"){
+    SerialBT.println(carSpeed);
     carState = Running;
     }
   }
@@ -88,14 +87,21 @@ void HandleWaitForRun(){
 void HandleRunning(){
 
   if (mode == "pattern"){
-      Motor_Move(carSpeed, carSpeed, carSpeed, carSpeed);
-      SerialBT.println(carSpeed);
-      // Battery readings, 
-      delay(duration*1000);
-      Motor_Move(0,0,0,0);
+    // SerialBT.println(String(carSpeed) + "car is running");
+    Motor_Move(carSpeed, carSpeed, carSpeed, carSpeed);
+
+    unsigned long startTime = millis();   // record the current time
+    while(millis() - startTime < duration * 1000){
+    SerialBT.println("car is running with speed of " + String(carSpeed));
+    delay(1000*timeInterval);
     }
 
-  else if (mode == "tape"){
-      // implement tape tracking here
+    // delay(duration*1000);
+    carSpeed = 0 ;
+    Motor_Move(carSpeed,carSpeed,carSpeed,carSpeed);
     }
+  else if (mode == "tape"){
+    // implement tape tracking here
+    }
+carState = CommandWaiting;
 }
