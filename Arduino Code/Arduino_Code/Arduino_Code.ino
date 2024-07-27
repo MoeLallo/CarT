@@ -104,7 +104,7 @@ void HandleRunning(){
   else if (mode == "tape"){
     // implement tape tracking here
     }
-carState = CommandWaiting;
+carState = InitialWaiting;
 }
 
 String createJson(){

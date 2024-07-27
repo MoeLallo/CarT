@@ -25,7 +25,6 @@ namespace CarCommunication
                     String devicePortName = GetDevicePortName();
                     port = new SerialPort
                     {
-                         
                         BaudRate = 115200,
                         PortName = devicePortName,
                         ReadTimeout = 1000
@@ -34,7 +33,8 @@ namespace CarCommunication
                     port.Write("Hello.");
 
                     String bluetoothConfirmationMsg = port.ReadLine();
-                    return bluetoothConfirmationMsg;        // send additional information for the GUI (Cart Type, Serial port, Cart ID)
+                    String mainPageMsg = devicePortName + "."  + "FreeNove Wrover" + "." + "CarT" + "." + bluetoothConfirmationMsg;
+                    return mainPageMsg;        // send additional information for the GUI (Cart Type, Serial port, Cart ID)
                 }
                 catch (Exception ex)
                 {
@@ -84,9 +84,9 @@ namespace CarCommunication
 
         }
 
-        public async Task HandleRunningAsync(int timeInterval, int duration, CancellationToken token)
+        public async Task HandleRunningAsync(int timeInterval, int duration)
         {
-            while (!token.IsCancellationRequested)
+            for (int i=0; i  < duration; i++ )
             {
                 try
                 {
@@ -97,7 +97,7 @@ namespace CarCommunication
                 {
                     Console.WriteLine("Error: " + ex.Message);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(timeInterval), token);
+                await Task.Delay(TimeSpan.FromSeconds(timeInterval));
             }
         }
         public String GetDevicePortName()

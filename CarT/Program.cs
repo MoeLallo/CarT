@@ -10,12 +10,12 @@ class Program
         {
             
             string connectionStatus = connector.ConnectToBluetooth();
-            Console.WriteLine("Connection Status: " + connectionStatus);
+            Console.WriteLine(connectionStatus);
 
             
             if (connectionStatus.Contains("Connected"))
             {
-                // Send parameters using Json file
+                // create and Send parameters using Json file
                 var parameters = new
                 {
                     mode = "pattern",
@@ -29,28 +29,16 @@ class Program
                 Console.WriteLine("Parameter Status: " + parameterStatus);
 
                 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(1000);        //give some time to read the parameters
 
                 
                 string runStatus = connector.SendRunMsg();
+
                 Console.WriteLine("waiting for run state: car speed is " + runStatus);
 
+                var handleRunningTask = connector.HandleRunningAsync(parameters.timeInterval, parameters.duration); // adding the time interval delay is very important
 
-
-                var cancellationTokenSource = new CancellationTokenSource();
-                var token = cancellationTokenSource.Token;
-                var handleRunningTask = connector.HandleRunningAsync(parameters.timeInterval, parameters.duration, token);
-                await Task.Delay(TimeSpan.FromSeconds(parameters.duration));    // adding the time interval delay is very important
-                cancellationTokenSource.Cancel();
-
-                try
-                {
-                    await handleRunningTask;
-                }
-                catch (OperationCanceledException)
-                {
-                    // Task was cancelled
-                }
+                await Task.Delay(TimeSpan.FromSeconds(parameters.duration));
             }
         }
 
