@@ -19,9 +19,9 @@ class Program
                 var parameters = new
                 {
                     mode = "pattern",
-                    carSpeed = 2500,
-                    duration = 8,
-                    timeInterval = 2,
+                    carSpeed = 1500,
+                    duration = 5,
+                    timeInterval = 1,
                     ready = true
                 };
                 string jsonString = System.Text.Json.JsonSerializer.Serialize(parameters);

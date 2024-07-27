@@ -85,6 +85,7 @@ void HandleWaitForRun(){
 }
 
 void HandleRunning(){
+ 
 
   if (mode == "pattern"){
     // SerialBT.println(String(carSpeed) + "car is running");
@@ -92,11 +93,11 @@ void HandleRunning(){
 
     unsigned long startTime = millis();   // record the current time
     while(millis() - startTime < duration * 1000){
-    SerialBT.println("car is running with speed of " + String(carSpeed));
+  
+    SerialBT.println(createJson());
+
     delay(1000*timeInterval);
     }
-
-    // delay(duration*1000);
     carSpeed = 0 ;
     Motor_Move(carSpeed,carSpeed,carSpeed,carSpeed);
     }
@@ -104,4 +105,15 @@ void HandleRunning(){
     // implement tape tracking here
     }
 carState = CommandWaiting;
+}
+
+String createJson(){
+    StaticJsonDocument<256> doc;
+    doc["carSpeed"] = carSpeed;
+    doc["BatteryADC"] = Get_Battery_Voltage_ADC();
+    doc["BatteryVoltage"] = Get_Battery_Voltage();
+
+    String output;
+    serializeJson(doc, output);
+    return output;
 }
